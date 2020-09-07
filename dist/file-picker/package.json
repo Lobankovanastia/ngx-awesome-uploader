@@ -1,11 +1,25 @@
 {
-  "name": "ngx-awesome-uploader",
-  "version": "9.0.4",
-  "description": "Angular Library for uploading files with Real-Time Progress bar, File Preview, Drag && Drop and Custom Template with Multi Language support",
-  "peerDependencies": {
-    "@angular/common": "^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0",
-    "@angular/core": " ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0"
+  "author": {
+    "name": "Vugar Abdullayev",
+    "email": "https://twitter.com/vugar005",
+    "url": "https://twitter.com/vugar005"
   },
+  "bugs": {
+    "url": "https://github.com/vugar005/ngx-awesome-uploader/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "tslib": "^1.9.0"
+  },
+  "deprecated": false,
+  "description": "Angular Library for uploading files with Real-Time Progress bar, File Preview, Drag && Drop and Custom Template with Multi Language support",
+  "es2015": "fesm2015/ngx-awesome-uploader.js",
+  "esm2015": "esm2015/ngx-awesome-uploader.js",
+  "esm5": "esm5/ngx-awesome-uploader.js",
+  "fesm2015": "fesm2015/ngx-awesome-uploader.js",
+  "fesm5_ivy_ngcc": "__ivy_ngcc__/fesm5/ngx-awesome-uploader.js",
+  "fesm5": "fesm5/ngx-awesome-uploader.js",
+  "homepage": "https://ngx-awesome-uploader.stackblitz.io/",
   "keywords": [
     "ngx",
     "angular",
@@ -19,24 +33,23 @@
     "angular file upload"
   ],
   "license": "MIT",
-  "repository": "https://github.com/Lobankovanastia/ngx-awesome-uploader",
-  "author": {
-    "name": "Vugar Abdullayev",
-    "url": "https://twitter.com/vugar005",
-    "email": "https://twitter.com/vugar005"
-  },
-  "homepage": "https://ngx-awesome-uploader.stackblitz.io/",
   "main": "bundles/ngx-awesome-uploader.umd.js",
-  "module": "fesm5/ngx-awesome-uploader.js",
-  "es2015": "fesm2015/ngx-awesome-uploader.js",
-  "esm5": "esm5/ngx-awesome-uploader.js",
-  "esm2015": "esm2015/ngx-awesome-uploader.js",
-  "fesm5": "fesm5/ngx-awesome-uploader.js",
-  "fesm2015": "fesm2015/ngx-awesome-uploader.js",
-  "typings": "ngx-awesome-uploader.d.ts",
   "metadata": "ngx-awesome-uploader.metadata.json",
+  "module_ivy_ngcc": "__ivy_ngcc__/fesm5/ngx-awesome-uploader.js",
+  "module": "fesm5/ngx-awesome-uploader.js",
+  "name": "ngx-awesome-uploader",
+  "peerDependencies": {
+    "@angular/common": "^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0",
+    "@angular/core": " ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lobankovanastia/ngx-awesome-uploader.git"
+  },
   "sideEffects": false,
-  "dependencies": {
-    "tslib": "^1.9.0"
-  }
+  "typings": "ngx-awesome-uploader.d.ts",
+  "version": "9.0.4",
+  "scripts": {
+    "prepublishOnly": "node --eval \"console.error('ERROR: Trying to publish a package that has been compiled by NGCC. This is not allowed.\\nPlease delete and rebuild the package, without compiling with NGCC, before attempting to publish.\\nNote that NGCC may have been run by importing this package into another project that is being built with Ivy enabled.\\n')\" && exit 1"
+  },
 }
