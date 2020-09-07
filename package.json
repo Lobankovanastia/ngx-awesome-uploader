@@ -8,7 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "postinstall": "rmdir ./e2e && rmdir ./src && rmdir ./projects && mv ./dist/file-picker/* ./ && rmdir ./dist"
+    "postinstall": "mv ./dist/file-picker/* ./ && rmdir ./dist"
   },
   "private": true,
   "dependencies": {
