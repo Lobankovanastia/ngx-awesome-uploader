@@ -9,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "postinstall": "mv ./dist/file-picker/* ./ && rm ./dist -R && rm ./node_modules/@angular -R && && rm ./node_modules/core-js -R && rm ./node_modules/zone.js -R"
+    "postinstall": "mv ./dist/file-picker/* ./ && rm ./dist -R && rm ./node_modules/@angular -R && rm ./node_modules/core-js -R && rm ./node_modules/zone.js -R"
   },
   "private": true,
   "dependencies": {
