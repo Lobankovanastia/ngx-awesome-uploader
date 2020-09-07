@@ -1,7 +1,7 @@
 {
   "name": "ngx-awesome-uploader",
   "version": "0.0.0",
-  "files": ["dist"],
+  "files": ["dist/file-picker"],
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
