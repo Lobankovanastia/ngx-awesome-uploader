@@ -25,30 +25,56 @@ class="file-input"
 />
 
 <div class="cropperJsOverlay" *ngIf="currentCropperFile">
-<div class="cropperJsBox">
-  <img
-    [src]="safeCropImgUrl"
-    id="cropper-img"
-    (load)="cropperImgLoaded($event)"
-  />
-  <div class="cropper-actions">
-    <button class="cropSubmit" (click)="onCropSubmit()">
-      {{ _captions?.cropper?.crop }}
-    </button>
-    <button
-      class="cropCancel"
-      (click)="
-        closeCropper({
-          file: currentCropperFile,
-          fileName: currentCropperFile.name
-        })
-      "
-    >
-      {{ _captions?.cropper?.cancel }}
-    </button>
+  <div class="cropperJsBox" [ngClass]="cropperIsReady? '' : 'visually-hidden'">
+    <image-cropper
+      [imageFile]="currentCropperFile"
+      [aspectRatio]="cropperOptions.aspectRatio"
+      [autoCrop]="cropperOptions.autoCrop"
+      [maintainAspectRatio]="cropperOptions.maintainAspectRatio"
+      format="png"
+      [resizeToWidth]="cropperOptions.resizeToWidth"
+      [resizeToHeight]="cropperOptions.resizeToHeight"
+      [cropperStaticWidth]="cropperOptions.cropperStaticWidth"
+      [cropperStaticHeight]="cropperOptions.cropperStaticHeight"
+      [cropperMinWidth]="cropperOptions.cropperMinWidth"
+      [cropperMinHeight]="cropperOptions.cropperMinHeight"
+      [initialStepSize]="cropperOptions.initialStepSize"
+      [onlyScaleDown]="cropperOptions.onlyScaleDown"
+      [roundCropper]="cropperOptions.roundCropper"
+      [imageQuality]="cropperOptions.imageQuality"
+      [alignImage]="cropperOptions.alignImage"
+      [backgroundColor]="cropperOptions.backgroundColor"
+      [hideResizeSquares]="cropperOptions.hideResizeSquares"
+      [disabled]="cropperOptions.disabled"
+      [canvasRotation]="cropperOptions.canvasRotation"
+      [transform]="cropperOptions.transform"
+      (imageCropped)="imageCropped($event)"
+      (imageLoaded)="imageLoaded()"
+      (loadImageFailed)="loadImageFailed()"
+    ></image-cropper>
+
+    <div class="cropper-actions">
+      <button class="cropSubmit" (click)="onCropSubmit()">
+        {{ _captions?.cropper?.crop }}
+      </button>
+      <button
+        class="cropCancel"
+        (click)="
+          closeCropper({
+            file: currentCropperFile,
+            fileName: currentCropperFile.name
+          })
+        "
+      >
+        {{ _captions?.cropper?.cancel }}
+      </button>
+    </div>
+  </div>
+  <div class="cropperJsBox loader_holder" *ngIf="!cropperIsReady">
+    <div class="loader"></div>
   </div>
 </div>
-</div>
+
 <div
 class="files-preview-wrapper"
 [ngClass]="{ 'visually-hidden': !showPreviewContainer }"

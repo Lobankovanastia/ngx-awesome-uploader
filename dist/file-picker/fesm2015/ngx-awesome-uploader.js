@@ -1,7 +1,8 @@
-import { Injectable, EventEmitter, Component, ElementRef, Output, Input, NgZone, Renderer2, NgModule } from '@angular/core';
+import { Injectable, EventEmitter, Component, ChangeDetectionStrategy, ChangeDetectorRef, Output, Input, NgZone, Renderer2, NgModule } from '@angular/core';
 import { of, Subject, combineLatest, timer } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
-import { takeUntil, map, tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
+import { base64ToFile, ImageCropperModule } from 'ngx-image-cropper';
 import { HttpEventType } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 
@@ -56,6 +57,13 @@ FilePickerService.decorators = [
 FilePickerService.ctorParameters = () => [
     { type: DomSanitizer }
 ];
+if (false) {
+    /**
+     * @type {?}
+     * @private
+     */
+    FilePickerService.prototype.sanitizer;
+}
 
 /**
  * @fileoverview added by tsickle
@@ -81,6 +89,16 @@ function getFileType(fileExtension) {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
+/**
+ * @record
+ */
+function ValidationError() { }
+if (false) {
+    /** @type {?} */
+    ValidationError.prototype.file;
+    /** @type {?} */
+    ValidationError.prototype.error;
+}
 /** @enum {string} */
 const FileValidationTypes = {
     fileMaxSize: 'FILE_MAX_SIZE',
@@ -99,6 +117,20 @@ const FileValidationTypes = {
  * @abstract
  */
 class FilePickerAdapter {
+}
+if (false) {
+    /**
+     * @abstract
+     * @param {?} fileItem
+     * @return {?}
+     */
+    FilePickerAdapter.prototype.uploadFile = function (fileItem) { };
+    /**
+     * @abstract
+     * @param {?} fileItem
+     * @return {?}
+     */
+    FilePickerAdapter.prototype.removeFile = function (fileItem) { };
 }
 
 /**
@@ -126,14 +158,200 @@ const DefaultCaptions = {
  * @fileoverview added by tsickle
  * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
  */
+class FileDroppingProcessModel {
+    /**
+     * @param {?} expectedLength
+     * @param {?=} timerCounter
+     */
+    constructor(expectedLength, timerCounter = 20) {
+        this.filesForUpload = [];
+        this.timerCounter = 0;
+        this.expectedLength = 0;
+        this.checkTimeIntervalMS = 100;
+        this.expectedLength = expectedLength;
+        this.timerCounter = timerCounter;
+    }
+    /**
+     * @param {?} file
+     * @return {?}
+     */
+    addFileForUpload(file) {
+        this.filesForUpload.push(file);
+    }
+    /**
+     * @return {?}
+     */
+    diminishCounter() {
+        this.timerCounter--;
+    }
+    /**
+     * @return {?}
+     */
+    isProcessingFinished() {
+        return this.timerCounter === 0 || this.filesForUpload.length === this.expectedLength;
+    }
+    /**
+     * @param {?} length
+     * @return {?}
+     */
+    setExpectedLength(length) {
+        this.expectedLength = length;
+    }
+    /**
+     * @return {?}
+     */
+    getFiles() {
+        return this.filesForUpload;
+    }
+}
+if (false) {
+    /**
+     * @type {?}
+     * @private
+     */
+    FileDroppingProcessModel.prototype.filesForUpload;
+    /**
+     * @type {?}
+     * @private
+     */
+    FileDroppingProcessModel.prototype.timerCounter;
+    /**
+     * @type {?}
+     * @private
+     */
+    FileDroppingProcessModel.prototype.expectedLength;
+    /** @type {?} */
+    FileDroppingProcessModel.prototype.checkTimeIntervalMS;
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/**
+ * @record
+ */
+function CropperOptions() { }
+if (false) {
+    /** @type {?|undefined} */
+    CropperOptions.prototype.aspectRatio;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.autoCrop;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.maintainAspectRatio;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.resizeToWidth;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.resizeToHeight;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.cropperStaticWidth;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.cropperStaticHeight;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.cropperMinWidth;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.cropperMinHeight;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.initialStepSize;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.onlyScaleDown;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.roundCropper;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.imageQuality;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.alignImage;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.backgroundColor;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.hideResizeSquares;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.disabled;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.canvasRotation;
+    /** @type {?|undefined} */
+    CropperOptions.prototype.transform;
+}
+class CropperOptionsModel {
+    /**
+     * @param {?} __0
+     */
+    constructor({ aspectRatio = 1, autoCrop = true, maintainAspectRatio = true, resizeToWidth = 0, resizeToHeight = 0, cropperStaticWidth = 0, cropperStaticHeight = 0, cropperMinWidth = 0, cropperMinHeight = 0, initialStepSize = 3, onlyScaleDown = false, roundCropper = false, imageQuality = 92, alignImage = 'center', backgroundColor = '', hideResizeSquares = false, disabled = false, canvasRotation = 0, transform = {} }) {
+        this.aspectRatio = aspectRatio;
+        this.autoCrop = autoCrop;
+        this.maintainAspectRatio = maintainAspectRatio;
+        this.resizeToWidth = resizeToWidth;
+        this.resizeToHeight = resizeToHeight;
+        this.cropperStaticWidth = cropperStaticWidth;
+        this.cropperStaticHeight = cropperStaticHeight;
+        this.cropperMinWidth = cropperMinWidth;
+        this.cropperMinHeight = cropperMinHeight;
+        this.initialStepSize = initialStepSize;
+        this.onlyScaleDown = onlyScaleDown;
+        this.roundCropper = roundCropper;
+        this.imageQuality = imageQuality;
+        this.alignImage = alignImage;
+        this.backgroundColor = backgroundColor;
+        this.hideResizeSquares = hideResizeSquares;
+        this.disabled = disabled;
+        this.canvasRotation = canvasRotation;
+        this.transform = transform;
+    }
+}
+if (false) {
+    /** @type {?} */
+    CropperOptionsModel.prototype.aspectRatio;
+    /** @type {?} */
+    CropperOptionsModel.prototype.autoCrop;
+    /** @type {?} */
+    CropperOptionsModel.prototype.maintainAspectRatio;
+    /** @type {?} */
+    CropperOptionsModel.prototype.resizeToWidth;
+    /** @type {?} */
+    CropperOptionsModel.prototype.resizeToHeight;
+    /** @type {?} */
+    CropperOptionsModel.prototype.cropperStaticWidth;
+    /** @type {?} */
+    CropperOptionsModel.prototype.cropperStaticHeight;
+    /** @type {?} */
+    CropperOptionsModel.prototype.cropperMinWidth;
+    /** @type {?} */
+    CropperOptionsModel.prototype.cropperMinHeight;
+    /** @type {?} */
+    CropperOptionsModel.prototype.initialStepSize;
+    /** @type {?} */
+    CropperOptionsModel.prototype.onlyScaleDown;
+    /** @type {?} */
+    CropperOptionsModel.prototype.roundCropper;
+    /** @type {?} */
+    CropperOptionsModel.prototype.imageQuality;
+    /** @type {?} */
+    CropperOptionsModel.prototype.alignImage;
+    /** @type {?} */
+    CropperOptionsModel.prototype.backgroundColor;
+    /** @type {?} */
+    CropperOptionsModel.prototype.hideResizeSquares;
+    /** @type {?} */
+    CropperOptionsModel.prototype.disabled;
+    /** @type {?} */
+    CropperOptionsModel.prototype.canvasRotation;
+    /** @type {?} */
+    CropperOptionsModel.prototype.transform;
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+// declare var Cropper;
 class FilePickerComponent {
     /**
      * @param {?} fileService
-     * @param {?} elementRef
+     * @param {?} ref
      */
-    constructor(fileService, elementRef) {
+    constructor(fileService, ref) {
         this.fileService = fileService;
-        this.elementRef = elementRef;
+        this.ref = ref;
         /**
          * Emitted when file upload via api successfully. Emitted for every file
          */
@@ -177,6 +395,7 @@ class FilePickerComponent {
         this.filesForCropper = [];
         this.cropClosed$ = new Subject();
         this._onDestroy$ = new Subject();
+        this.cropperIsReady = false;
     }
     /**
      * @return {?}
@@ -204,7 +423,7 @@ class FilePickerComponent {
      */
     listenToCropClose() {
         this.cropClosed$
-            .pipe(takeUntil(this._onDestroy$))
+            // .pipe(takeUntil(this._onDestroy$))
             .subscribe((/**
          * @param {?} res
          * @return {?}
@@ -220,7 +439,6 @@ class FilePickerComponent {
             const nextFile = croppedIndex !== -1
                 ? this.filesForCropper[croppedIndex + 1]
                 : undefined;
-            // console.log(nextFile)
             //  console.log('cropped', res);
             this.filesForCropper = [...this.filesForCropper].filter((/**
              * @param {?} item
@@ -238,24 +456,7 @@ class FilePickerComponent {
      * @return {?}
      */
     setCropperOptions() {
-        if (!this.cropperOptions) {
-            this.setDefaultCropperOptions();
-        }
-    }
-    /**
-     * Sets manual cropper options if no custom options are avaiable
-     * @return {?}
-     */
-    setDefaultCropperOptions() {
-        this.cropperOptions = {
-            dragMode: 'crop',
-            aspectRatio: 1,
-            autoCrop: true,
-            movable: true,
-            zoomable: true,
-            scalable: true,
-            autoCropArea: 0.8
-        };
+        this.cropperOptions = this.cropperOptions === undefined ? new CropperOptionsModel({}) : new CropperOptionsModel(this.cropperOptions);
     }
     /**
      * On input file selected
@@ -364,6 +565,7 @@ class FilePickerComponent {
             this.filesForCropper.push(file);
             if (!this.currentCropperFile) {
                 this.openCropper(file);
+                this.ref.detectChanges();
             }
         }
         else {
@@ -414,10 +616,7 @@ class FilePickerComponent {
      * @return {?}
      */
     dropped(event) {
-        /** @type {?} */
-        const files = event.files;
-        /** @type {?} */
-        const filesForUpload = [];
+        this.droppingProcess = new FileDroppingProcessModel(event.files.length);
         for (const droppedFile of event.files) {
             // Is it a file?
             if (droppedFile.fileEntry.isFile) {
@@ -428,7 +627,7 @@ class FilePickerComponent {
                  * @return {?}
                  */
                 (file) => {
-                    filesForUpload.push(file);
+                    this.droppingProcess.addFileForUpload(file);
                 }));
             }
             else {
@@ -438,10 +637,7 @@ class FilePickerComponent {
                 // console.log(droppedFile.relativePath, fileEntry);
             }
         }
-        setTimeout((/**
-         * @return {?}
-         */
-        () => this.handleFiles(filesForUpload).subscribe()));
+        this.handleFilesIfDroppingProcessIsFinished();
     }
     /**
      * Add file to file list after succesfull validation
@@ -459,14 +655,7 @@ class FilePickerComponent {
      * @return {?}
      */
     openCropper(file) {
-        if (((/** @type {?} */ (window))).UPLOADER_TEST_MODE || typeof Cropper !== 'undefined') {
-            this.safeCropImgUrl = this.fileService.createSafeUrl(file);
-            this.currentCropperFile = file;
-        }
-        else {
-            console.warn("please import cropperjs script and styles to use cropper feature or disable it by setting [enableCropper]='false'");
-            return;
-        }
+        this.currentCropperFile = file;
     }
     /**
      * @param {?} file
@@ -476,27 +665,14 @@ class FilePickerComponent {
         return this.fileService.createSafeUrl(file);
     }
     /**
-     * On img load event
-     * @param {?} e
-     * @return {?}
-     */
-    cropperImgLoaded(e) {
-        /** @type {?} */
-        const image = document.getElementById('cropper-img');
-        this.cropper = new Cropper(image, this.cropperOptions);
-    }
-    /**
      * Close or cancel cropper
      * @param {?} filePreview
      * @return {?}
      */
     closeCropper(filePreview) {
         this.currentCropperFile = undefined;
-        this.cropper = undefined;
-        setTimeout((/**
-         * @return {?}
-         */
-        () => this.cropClosed$.next(filePreview)), 200);
+        this.cropperIsReady = false;
+        this.cropClosed$.next(filePreview);
     }
     /**
      * Removes files from files list
@@ -519,7 +695,7 @@ class FilePickerComponent {
         this.uploadSuccess.next(fileItem);
     }
     /**
-     * Emits event when file upload api returns success
+     * Emits event when file upload api returns failure
      * @param {?} er
      * @return {?}
      */
@@ -548,6 +724,7 @@ class FilePickerComponent {
             this.validationError.next({ file: file, error: FileValidationTypes.extensions });
             return false;
         }
+        return true;
     }
     /**
      * Validates selected file size and total file size
@@ -615,11 +792,7 @@ class FilePickerComponent {
      * @return {?}
      */
     onCropSubmit() {
-        /** @type {?} */
-        const canvas = this.cropper.getCroppedCanvas();
-        if (canvas != null) {
-            this.cropper.getCroppedCanvas().toBlob(this.blobFallBack.bind(this), 'image/jpeg');
-        }
+        this.blobFallBack(this.croppedImage);
     }
     /**
      * After crop submit
@@ -665,18 +838,60 @@ class FilePickerComponent {
         this.removeSuccess.next(fileItem);
         this.removeFileFromList(fileItem);
     }
+    /**
+     * @param {?} event
+     * @return {?}
+     */
+    imageCropped(event) {
+        this.croppedImage = base64ToFile(event.base64);
+    }
+    /**
+     * @return {?}
+     */
+    imageLoaded() {
+        this.cropperIsReady = true;
+    }
+    /**
+     * @return {?}
+     */
+    loadImageFailed() {
+        console.log('Load Image Failed');
+        this.closeCropper({
+            file: this.currentCropperFile,
+            fileName: this.currentCropperFile.name
+        });
+    }
+    /**
+     * @private
+     * @return {?}
+     */
+    handleFilesIfDroppingProcessIsFinished() {
+        this.droppingProcess.diminishCounter();
+        if (this.droppingProcess.isProcessingFinished()) {
+            this.handleFiles(this.droppingProcess.getFiles()).subscribe();
+        }
+        else {
+            setTimeout((/**
+             * @return {?}
+             */
+            () => {
+                this.handleFilesIfDroppingProcessIsFinished();
+            }), this.droppingProcess.checkTimeIntervalMS);
+        }
+    }
 }
 FilePickerComponent.decorators = [
     { type: Component, args: [{
                 selector: 'ngx-file-picker',
-                template: "<div\n(click)=\"fileInput.click()\"\nclass=\"file-drop-wrapper\"\n*ngIf=\"showeDragDropZone\"\n>\n<file-drop\n  (onFileDrop)=\"dropped($event)\"\n  [customstyle]=\"'custom-drag'\"\n  [captions]=\"_captions\"\n>\n  <ng-content select=\".dropzoneTemplate\"> </ng-content>\n</file-drop>\n</div>\n\n<input\ntype=\"file\"\nname=\"file[]\"\nid=\"fileInput\"\n#fileInput\n[multiple]=\"uploadType === 'multi' ? 'multiple' : ''\"\n(click)=\"fileInput.value = null\"\n(change)=\"onChange(fileInput)\"\n[accept]=\"accept\"\nclass=\"file-input\"\n/>\n\n<div class=\"cropperJsOverlay\" *ngIf=\"currentCropperFile\">\n<div class=\"cropperJsBox\">\n  <img\n    [src]=\"safeCropImgUrl\"\n    id=\"cropper-img\"\n    (load)=\"cropperImgLoaded($event)\"\n  />\n  <div class=\"cropper-actions\">\n    <button class=\"cropSubmit\" (click)=\"onCropSubmit()\">\n      {{ _captions?.cropper?.crop }}\n    </button>\n    <button\n      class=\"cropCancel\"\n      (click)=\"\n        closeCropper({\n          file: currentCropperFile,\n          fileName: currentCropperFile.name\n        })\n      \"\n    >\n      {{ _captions?.cropper?.cancel }}\n    </button>\n  </div>\n</div>\n</div>\n<div\nclass=\"files-preview-wrapper\"\n[ngClass]=\"{ 'visually-hidden': !showPreviewContainer }\"\n>\n<file-preview-container\n  *ngIf=\"files\"\n  [previewFiles]=\"files\"\n  (removeFile)=\"removeFile($event)\"\n  (uploadSuccess)=\"onUploadSuccess($event)\"\n  [adapter]=\"adapter\"\n  [itemTemplate]=\"itemTemplate\"\n  [captions]=\"_captions\"\n>\n</file-preview-container>\n</div>\n",
-                styles: ["*{box-sizing:border-box}:host{display:-webkit-box;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-direction:column;-webkit-box-align:center;align-items:center;width:100%;height:100%;overflow:auto;max-width:440px;border-radius:6px}.files-preview-wrapper{width:100%}#cropper-img{max-width:60vw}#cropper-img img{width:100%;height:100%}.file-drop-wrapper{width:100%;background:#fafbfd;padding-top:20px}.preview-container{display:-webkit-box;display:flex}.cropperJsOverlay{display:-webkit-box;display:flex;-webkit-box-pack:center;justify-content:center;-webkit-box-align:center;align-items:center;position:fixed;z-index:999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,.32)}.cropperJsBox{display:-webkit-box;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-direction:column;-webkit-box-pack:center;justify-content:center;-webkit-box-align:center;align-items:center;max-height:calc(100vh - 38px - 50px);max-width:90vw}.cropperJsBox .cropper-actions{display:-webkit-box;display:flex}.cropperJsBox .cropper-actions button{margin:5px;padding:12px 25px;border-radius:6px;border:0;cursor:pointer}.cropperJsBox .cropper-actions .cropSubmit{color:#fff;background:#16a085}::ng-deep.cropper img{max-height:300px!important}#images{display:-webkit-box;display:flex;-webkit-box-pack:center;justify-content:center;width:500px;overflow-x:auto}#images .image{-webkit-box-flex:0;flex:0 0 100px;margin:0 2px;display:-webkit-box;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-direction:column;-webkit-box-align:end;align-items:flex-end}#fileInput{display:none}.uploader-submit-btn{background:#ffd740;color:rgba(0,0,0,.87);border:0;padding:0 16px;line-height:36px;font-size:15px;margin-top:12px;border-radius:4px;box-shadow:0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);cursor:pointer}button:disabled{color:rgba(0,0,0,.26);background:#dcdcdc}.visually-hidden{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;outline:0;-webkit-appearance:none;-moz-appearance:none}"]
+                template: "<div\n(click)=\"fileInput.click()\"\nclass=\"file-drop-wrapper\"\n*ngIf=\"showeDragDropZone\"\n>\n<file-drop\n  (onFileDrop)=\"dropped($event)\"\n  [customstyle]=\"'custom-drag'\"\n  [captions]=\"_captions\"\n>\n  <ng-content select=\".dropzoneTemplate\"> </ng-content>\n</file-drop>\n</div>\n\n<input\ntype=\"file\"\nname=\"file[]\"\nid=\"fileInput\"\n#fileInput\n[multiple]=\"uploadType === 'multi' ? 'multiple' : ''\"\n(click)=\"fileInput.value = null\"\n(change)=\"onChange(fileInput)\"\n[accept]=\"accept\"\nclass=\"file-input\"\n/>\n\n<div class=\"cropperJsOverlay\" *ngIf=\"currentCropperFile\">\n  <div class=\"cropperJsBox\" [ngClass]=\"cropperIsReady? '' : 'visually-hidden'\">\n    <image-cropper\n      [imageFile]=\"currentCropperFile\"\n      [aspectRatio]=\"cropperOptions.aspectRatio\"\n      [autoCrop]=\"cropperOptions.autoCrop\"\n      [maintainAspectRatio]=\"cropperOptions.maintainAspectRatio\"\n      format=\"png\"\n      [resizeToWidth]=\"cropperOptions.resizeToWidth\"\n      [resizeToHeight]=\"cropperOptions.resizeToHeight\"\n      [cropperStaticWidth]=\"cropperOptions.cropperStaticWidth\"\n      [cropperStaticHeight]=\"cropperOptions.cropperStaticHeight\"\n      [cropperMinWidth]=\"cropperOptions.cropperMinWidth\"\n      [cropperMinHeight]=\"cropperOptions.cropperMinHeight\"\n      [initialStepSize]=\"cropperOptions.initialStepSize\"\n      [onlyScaleDown]=\"cropperOptions.onlyScaleDown\"\n      [roundCropper]=\"cropperOptions.roundCropper\"\n      [imageQuality]=\"cropperOptions.imageQuality\"\n      [alignImage]=\"cropperOptions.alignImage\"\n      [backgroundColor]=\"cropperOptions.backgroundColor\"\n      [hideResizeSquares]=\"cropperOptions.hideResizeSquares\"\n      [disabled]=\"cropperOptions.disabled\"\n      [canvasRotation]=\"cropperOptions.canvasRotation\"\n      [transform]=\"cropperOptions.transform\"\n      (imageCropped)=\"imageCropped($event)\"\n      (imageLoaded)=\"imageLoaded()\"\n      (loadImageFailed)=\"loadImageFailed()\"\n    ></image-cropper>\n\n    <div class=\"cropper-actions\">\n      <button class=\"cropSubmit\" (click)=\"onCropSubmit()\">\n        {{ _captions?.cropper?.crop }}\n      </button>\n      <button\n        class=\"cropCancel\"\n        (click)=\"\n          closeCropper({\n            file: currentCropperFile,\n            fileName: currentCropperFile.name\n          })\n        \"\n      >\n        {{ _captions?.cropper?.cancel }}\n      </button>\n    </div>\n  </div>\n  <div class=\"cropperJsBox loader_holder\" *ngIf=\"!cropperIsReady\">\n    <div class=\"loader\"></div>\n  </div>\n</div>\n\n<div\nclass=\"files-preview-wrapper\"\n[ngClass]=\"{ 'visually-hidden': !showPreviewContainer }\"\n>\n<file-preview-container\n  *ngIf=\"files\"\n  [previewFiles]=\"files\"\n  (removeFile)=\"removeFile($event)\"\n  (uploadSuccess)=\"onUploadSuccess($event)\"\n  [adapter]=\"adapter\"\n  [itemTemplate]=\"itemTemplate\"\n  [captions]=\"_captions\"\n>\n</file-preview-container>\n</div>\n",
+                changeDetection: ChangeDetectionStrategy.OnPush,
+                styles: ["*{box-sizing:border-box}:host{display:-webkit-box;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-direction:column;-webkit-box-align:center;align-items:center;width:100%;height:100%;overflow:auto;max-width:440px;border-radius:6px}.files-preview-wrapper{width:100%}.file-drop-wrapper{width:100%;background:#fafbfd;padding-top:20px}.preview-container{display:-webkit-box;display:flex}.cropperJsOverlay{display:-webkit-box;display:flex;-webkit-box-pack:center;justify-content:center;-webkit-box-align:center;align-items:center;position:fixed;z-index:999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,.32)}.cropperJsBox{display:-webkit-box;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-direction:column;-webkit-box-pack:center;justify-content:center;-webkit-box-align:center;align-items:center;max-height:calc(100vh - 38px - 50px);max-width:90vw;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA3NCSVQICAjb4U/gAAAABlBMVEXMzMz////TjRV2AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABFJREFUCJlj+M/AgBVhF/0PAH6/D/HkDxOGAAAAAElFTkSuQmCC)}.cropperJsBox .cropper-actions{display:-webkit-box;display:flex}.cropperJsBox .cropper-actions button{margin:5px;padding:12px 25px;border-radius:6px;border:0;cursor:pointer}.cropperJsBox .cropper-actions .cropSubmit{color:#fff;background:#16a085}::ng-deep.cropper img{max-height:300px!important}#images{display:-webkit-box;display:flex;-webkit-box-pack:center;justify-content:center;width:500px;overflow-x:auto}#images .image{-webkit-box-flex:0;flex:0 0 100px;margin:0 2px;display:-webkit-box;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-direction:column;-webkit-box-align:end;align-items:flex-end}#fileInput{display:none}.uploader-submit-btn{background:#ffd740;color:rgba(0,0,0,.87);border:0;padding:0 16px;line-height:36px;font-size:15px;margin-top:12px;border-radius:4px;box-shadow:0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);cursor:pointer}button:disabled{color:rgba(0,0,0,.26);background:#dcdcdc}.visually-hidden{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;outline:0;-webkit-appearance:none;-moz-appearance:none}.loader{border:8px solid #f3f3f3;border-radius:50%;border-top:8px solid #000;width:120px;height:120px;-webkit-animation:2s linear infinite spin;animation:2s linear infinite spin;display:inline-block}.loader_holder{padding:120px;display:block;float:right;background-color:#fff}@-webkit-keyframes spin{0%{-webkit-transform:rotate(0)}100%{-webkit-transform:rotate(360deg)}}@keyframes spin{0%{-webkit-transform:rotate(0);transform:rotate(0)}100%{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}"]
             }] }
 ];
 /** @nocollapse */
 FilePickerComponent.ctorParameters = () => [
     { type: FilePickerService },
-    { type: ElementRef }
+    { type: ChangeDetectorRef }
 ];
 FilePickerComponent.propDecorators = {
     uploadSuccess: [{ type: Output }],
@@ -700,6 +915,150 @@ FilePickerComponent.propDecorators = {
     dropzoneTemplate: [{ type: Input }],
     captions: [{ type: Input }]
 };
+if (false) {
+    /**
+     * Emitted when file upload via api successfully. Emitted for every file
+     * @type {?}
+     */
+    FilePickerComponent.prototype.uploadSuccess;
+    /**
+     * Emitted when file upload via api failed. Emitted for every file
+     * @type {?}
+     */
+    FilePickerComponent.prototype.uploadFail;
+    /**
+     * Emitted when file is removed via api successfully. Emitted for every file
+     * @type {?}
+     */
+    FilePickerComponent.prototype.removeSuccess;
+    /**
+     * Emitted on file validation fail
+     * @type {?}
+     */
+    FilePickerComponent.prototype.validationError;
+    /**
+     * Emitted when file is added and passed validations. Not uploaded yet
+     * @type {?}
+     */
+    FilePickerComponent.prototype.fileAdded;
+    /**
+     * Custom validator function
+     * @type {?}
+     */
+    FilePickerComponent.prototype.customValidator;
+    /**
+     * Whether to enable cropper. Default: disabled
+     * @type {?}
+     */
+    FilePickerComponent.prototype.enableCropper;
+    /**
+     * Whether to show default drag and drop zone. Default:true
+     * @type {?}
+     */
+    FilePickerComponent.prototype.showeDragDropZone;
+    /**
+     * Whether to show default files preview container. Default: true
+     * @type {?}
+     */
+    FilePickerComponent.prototype.showPreviewContainer;
+    /**
+     * Preview Item template
+     * @type {?}
+     */
+    FilePickerComponent.prototype.itemTemplate;
+    /**
+     * Single or multiple. Default: multi
+     * @type {?}
+     */
+    FilePickerComponent.prototype.uploadType;
+    /**
+     * Max size of selected file in MB. Default: no limit
+     * @type {?}
+     */
+    FilePickerComponent.prototype.fileMaxSize;
+    /**
+     * Max count of file in multi-upload. Default: no limit
+     * @type {?}
+     */
+    FilePickerComponent.prototype.fileMaxCount;
+    /**
+     * Total Max size limit of all files in MB. Default: no limit
+     * @type {?}
+     */
+    FilePickerComponent.prototype.totalMaxSize;
+    /**
+     * Which file types to show on choose file dialog. Default: show all
+     * @type {?}
+     */
+    FilePickerComponent.prototype.accept;
+    /** @type {?} */
+    FilePickerComponent.prototype.files;
+    /**
+     * File extensions filter
+     * @type {?}
+     */
+    FilePickerComponent.prototype.fileExtensions;
+    /** @type {?} */
+    FilePickerComponent.prototype.cropper;
+    /**
+     * Cropper options.
+     * @type {?}
+     */
+    FilePickerComponent.prototype.cropperOptions;
+    /**
+     * Files array for cropper. Will be shown equentially if crop enabled
+     * @type {?}
+     */
+    FilePickerComponent.prototype.filesForCropper;
+    /**
+     * Current file to be shown in cropper
+     * @type {?}
+     */
+    FilePickerComponent.prototype.currentCropperFile;
+    /**
+     * Custom api Adapter for uploading/removing files
+     * @type {?}
+     */
+    FilePickerComponent.prototype.adapter;
+    /**
+     * Custome template for dropzone
+     * @type {?}
+     */
+    FilePickerComponent.prototype.dropzoneTemplate;
+    /**
+     * Custom captions input. Used for multi language support
+     * @type {?}
+     */
+    FilePickerComponent.prototype.captions;
+    /**
+     * captions object
+     * @type {?}
+     */
+    FilePickerComponent.prototype._captions;
+    /** @type {?} */
+    FilePickerComponent.prototype.cropClosed$;
+    /** @type {?} */
+    FilePickerComponent.prototype._onDestroy$;
+    /** @type {?} */
+    FilePickerComponent.prototype.croppedImage;
+    /** @type {?} */
+    FilePickerComponent.prototype.cropperIsReady;
+    /**
+     * @type {?}
+     * @private
+     */
+    FilePickerComponent.prototype.droppingProcess;
+    /**
+     * @type {?}
+     * @private
+     */
+    FilePickerComponent.prototype.fileService;
+    /**
+     * @type {?}
+     * @private
+     */
+    FilePickerComponent.prototype.ref;
+}
 
 /**
  * @fileoverview added by tsickle
@@ -848,7 +1207,9 @@ class FilePreviewItemComponent {
             case HttpEventType.Response:
                 /** @type {?} */
                 const body = event.body;
-                if (body && body.data) ;
+                if (body && body.data) {
+                    // this.uploaded.next(res.data.toString());
+                }
                 this.uploadProgress = undefined;
                 return;
             default:
@@ -895,6 +1256,43 @@ FilePreviewItemComponent.propDecorators = {
     itemTemplate: [{ type: Input }],
     captions: [{ type: Input }]
 };
+if (false) {
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.removeFile;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.uploadSuccess;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.uploadFail;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.imageClicked;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.fileItem;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.adapter;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.itemTemplate;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.captions;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.icon;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.uploadProgress;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.fileType;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.safeUrl;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.uploadError;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.uploadSubscription;
+    /** @type {?} */
+    FilePreviewItemComponent.prototype.fileId;
+    /**
+     * @type {?}
+     * @private
+     */
+    FilePreviewItemComponent.prototype.fileService;
+}
 
 /**
  * @fileoverview added by tsickle
@@ -943,6 +1341,24 @@ FilePreviewContainerComponent.propDecorators = {
     adapter: [{ type: Input }],
     captions: [{ type: Input }]
 };
+if (false) {
+    /** @type {?} */
+    FilePreviewContainerComponent.prototype.previewFiles;
+    /** @type {?} */
+    FilePreviewContainerComponent.prototype.itemTemplate;
+    /** @type {?} */
+    FilePreviewContainerComponent.prototype.removeFile;
+    /** @type {?} */
+    FilePreviewContainerComponent.prototype.uploadSuccess;
+    /** @type {?} */
+    FilePreviewContainerComponent.prototype.uploadFail;
+    /** @type {?} */
+    FilePreviewContainerComponent.prototype.lightboxFile;
+    /** @type {?} */
+    FilePreviewContainerComponent.prototype.adapter;
+    /** @type {?} */
+    FilePreviewContainerComponent.prototype.captions;
+}
 
 /**
  * @fileoverview added by tsickle
@@ -963,6 +1379,12 @@ class UploadFile {
         this.fileEntry = fileEntry;
     }
 }
+if (false) {
+    /** @type {?} */
+    UploadFile.prototype.relativePath;
+    /** @type {?} */
+    UploadFile.prototype.fileEntry;
+}
 
 /**
  * @fileoverview added by tsickle
@@ -975,6 +1397,10 @@ class UploadEvent {
     constructor(files) {
         this.files = files;
     }
+}
+if (false) {
+    /** @type {?} */
+    UploadEvent.prototype.files;
 }
 
 /**
@@ -1267,6 +1693,46 @@ FileComponent.propDecorators = {
     onFileOver: [{ type: Output }],
     onFileLeave: [{ type: Output }]
 };
+if (false) {
+    /** @type {?} */
+    FileComponent.prototype.captions;
+    /** @type {?} */
+    FileComponent.prototype.customstyle;
+    /** @type {?} */
+    FileComponent.prototype.disableIf;
+    /** @type {?} */
+    FileComponent.prototype.onFileDrop;
+    /** @type {?} */
+    FileComponent.prototype.onFileOver;
+    /** @type {?} */
+    FileComponent.prototype.onFileLeave;
+    /** @type {?} */
+    FileComponent.prototype.stack;
+    /** @type {?} */
+    FileComponent.prototype.files;
+    /** @type {?} */
+    FileComponent.prototype.subscription;
+    /** @type {?} */
+    FileComponent.prototype.dragoverflag;
+    /** @type {?} */
+    FileComponent.prototype.globalDisable;
+    /** @type {?} */
+    FileComponent.prototype.globalStart;
+    /** @type {?} */
+    FileComponent.prototype.globalEnd;
+    /** @type {?} */
+    FileComponent.prototype.numOfActiveReadEntries;
+    /**
+     * @type {?}
+     * @private
+     */
+    FileComponent.prototype.zone;
+    /**
+     * @type {?}
+     * @private
+     */
+    FileComponent.prototype.renderer;
+}
 
 /**
  * @fileoverview added by tsickle
@@ -1359,6 +1825,21 @@ PreviewLightboxComponent.propDecorators = {
     file: [{ type: Input }],
     close: [{ type: Output }]
 };
+if (false) {
+    /** @type {?} */
+    PreviewLightboxComponent.prototype.file;
+    /** @type {?} */
+    PreviewLightboxComponent.prototype.close;
+    /** @type {?} */
+    PreviewLightboxComponent.prototype.loaded;
+    /** @type {?} */
+    PreviewLightboxComponent.prototype.safeUrl;
+    /**
+     * @type {?}
+     * @private
+     */
+    PreviewLightboxComponent.prototype.sanitizer;
+}
 
 /**
  * @fileoverview added by tsickle
@@ -1386,6 +1867,10 @@ RefreshIconComponent.ctorParameters = () => [];
 RefreshIconComponent.propDecorators = {
     retry: [{ type: Output }]
 };
+if (false) {
+    /** @type {?} */
+    RefreshIconComponent.prototype.retry;
+}
 
 /**
  * @fileoverview added by tsickle
@@ -1398,6 +1883,7 @@ FilePickerModule.decorators = [
                 imports: [
                     CommonModule,
                     FileDropModule,
+                    ImageCropperModule
                 ],
                 declarations: [
                     FilePickerComponent,
@@ -1411,6 +1897,50 @@ FilePickerModule.decorators = [
                 providers: [FilePickerService]
             },] }
 ];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/**
+ * @record
+ */
+function FilePreviewModel() { }
+if (false) {
+    /** @type {?|undefined} */
+    FilePreviewModel.prototype.fileId;
+    /** @type {?} */
+    FilePreviewModel.prototype.file;
+    /** @type {?} */
+    FilePreviewModel.prototype.fileName;
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/**
+ * @record
+ */
+function UploaderCaptions() { }
+if (false) {
+    /** @type {?} */
+    UploaderCaptions.prototype.dropzone;
+    /** @type {?} */
+    UploaderCaptions.prototype.cropper;
+    /** @type {?} */
+    UploaderCaptions.prototype.previewCard;
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
 
 export { FilePickerAdapter, FilePickerComponent, FilePickerModule, FilePickerService, FileValidationTypes, FileDropModule as ɵa, FileComponent as ɵb, CloudIconComponent as ɵc, FilePreviewContainerComponent as ɵd, FilePreviewItemComponent as ɵe, PreviewLightboxComponent as ɵf, RefreshIconComponent as ɵg, CloseIconComponent as ɵh };
 //# sourceMappingURL=ngx-awesome-uploader.js.map
