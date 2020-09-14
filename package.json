@@ -1,13 +1,15 @@
 {
   "name": "ngx-awesome-uploader",
   "version": "0.0.0",
+  "files": ["dist"],
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "postinstall": "mv ./dist/file-picker/* ./ && rm ./dist -R && rm ./node_modules/@angular -R && rm ./node_modules/core-js -R && rm ./node_modules/zone.js -R"
   },
   "private": true,
   "dependencies": {
