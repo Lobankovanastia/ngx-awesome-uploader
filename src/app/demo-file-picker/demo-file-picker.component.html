@@ -1,22 +1,17 @@
 <div style="position: fixed;width: 100vw;height: 80vh;display: flex;align-items: center;justify-content: center">
   <ngx-file-picker #uploader
-    [totalMaxSize]="0.5"
-    [fileMaxCount]="1"
-    [fileMaxSize]="200"
     [uploadType]="'multi'"
     (validationError)= "onValidationError($event)"
     [adapter]="adapter"
-    [fileExtensions]="['pdf', 'jpg', 'png', 'PNG', 'mp4', 'css', 'docx', 'txt']"
-    [enableCropper]="false"
+    [enableCropper]="true"
     (uploadSuccess)="onUploadSuccess($event)"
     (uploadFail)="onUploadFail($event)"
     (removeSuccess)="onRemoveSuccess($event)"
     [showeDragDropZone]="true"
     [showPreviewContainer]="true"
-    [customValidator]="myCustomValidator"
     [accept]="'image/*'"
-    [captions]="captions"
     (fileAdded)="onFileAdded($event)"
+    [cropperOptions]="cropperOptions"
  >
   <!-- <div class="dropzoneTemplate">
     <button>Custom</button>

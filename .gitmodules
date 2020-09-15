@@ -1,3 +1,0 @@
-[submodule "dist/file-picker"]
-	path = dist/file-picker
-	url = git@gitlab.com:RedLobster/ngx-awesome-uploader-dist.git

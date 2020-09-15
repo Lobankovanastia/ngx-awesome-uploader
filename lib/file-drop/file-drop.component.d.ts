@@ -1,0 +1,34 @@
+import { EventEmitter, NgZone, OnDestroy, Renderer2 } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { UploadFile } from './upload-file.model';
+import { UploadEvent } from './upload-event.model';
+import { UploaderCaptions } from '../uploader-captions';
+export declare class FileComponent implements OnDestroy {
+    private zone;
+    private renderer;
+    captions: UploaderCaptions;
+    customstyle: string;
+    disableIf: boolean;
+    onFileDrop: EventEmitter<UploadEvent>;
+    onFileOver: EventEmitter<any>;
+    onFileLeave: EventEmitter<any>;
+    stack: any[];
+    files: UploadFile[];
+    subscription: Subscription;
+    dragoverflag: boolean;
+    globalDisable: boolean;
+    globalStart: Function;
+    globalEnd: Function;
+    numOfActiveReadEntries: number;
+    constructor(zone: NgZone, renderer: Renderer2);
+    onDragOver(event: Event): void;
+    onDragLeave(event: Event): void;
+    dropFiles(event: any): void;
+    private traverseFileTree;
+    private addToQueue;
+    pushToStack(str: any): void;
+    popToStack(): void;
+    private clearQueue;
+    private preventAndStop;
+    ngOnDestroy(): void;
+}

@@ -17,45 +17,30 @@ export class DemoFilePickerComponent implements OnInit {
   @ViewChild('uploader', { static: true }) uploader: FilePickerComponent;
   adapter = new DemoFilePickerAdapter(this.http);
   myFiles: FilePreviewModel[] = [];
-  captions: UploaderCaptions = {
-    dropzone: {
-      title: "Fayllari bura ata bilersiz",
-      or: "və yaxud",
-      browse: "Fayl seçin"
-    },
-    cropper: {
-      crop: "Kəs",
-      cancel:"Imtina"
-    },
-    previewCard: {
-      remove: "Sil",
-      uploadError: "Fayl yüklənmədi"
-    }
-  }
+  cropperOptions = {maintainAspectRatio: false};
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
   }
+
   onValidationError(e: ValidationError) {
     console.log(e);
   }
-  onUploadSuccess(e: FilePreviewModel) {
-   // console.log(e);
-  // console.log(this.myFiles)
-  }
+  onUploadSuccess(e: FilePreviewModel) {}
 
   onUploadFail(e: FilePreviewModel) {
-    console.log(e)
-  }
-  onRemoveSuccess(e: FilePreviewModel) {
     console.log(e);
   }
+  onRemoveSuccess(e: FilePreviewModel) {}
+
   onFileAdded(file: FilePreviewModel) {
     this.myFiles.push(file);
   }
+
   removeFile() {
-  this.uploader.removeFileFromList(this.myFiles[0]);
+    this.uploader.removeFileFromList(this.myFiles[0]);
   }
+  /*
    myCustomValidator(file: File): Observable<boolean> {
        console.log(file.name.length);
       if (!file.name.includes('uploader')) {
@@ -65,6 +50,6 @@ export class DemoFilePickerComponent implements OnInit {
         return this.http.get('https://vugar.free.beeceptor.com').pipe(map((res) =>  res === 'OK' ));
       }
      return of(false).pipe(delay(2000));
-  }
+  }*/
 
 }

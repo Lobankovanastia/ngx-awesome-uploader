@@ -11,7 +11,7 @@ export class DemoFilePickerAdapter extends FilePickerAdapter {
   public uploadFile(fileItem: FilePreviewModel) {
     const form = new FormData();
     form.append('file', fileItem.file);
-    const api = 'https://file-picker-demo.free.beeceptor.co';
+    const api = 'https://upload.expm.space/upload/64840a32-e324-4a08-99af-c73aec58c03b/file';
     const req = new HttpRequest('POST', api, form, {reportProgress: true});
     return this.http.request(req)
     .pipe(

@@ -1,4 +1,4 @@
-import { FilePreviewModel } from 'ngx-awesome-uploader';
+/*import { FilePreviewModel } from 'ngx-awesome-uploader';
 import { HttpRequest, HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -32,3 +32,4 @@ export class DemoFilePickerAdapter extends FilePickerAdapter {
     return this.http.post(removeApi, {id: fileItem.fileId});
     }
 }
+*/
