@@ -391,6 +391,9 @@ export class FilePickerComponent implements OnInit, OnDestroy {
       file: this.currentCropperFile,
       fileName: this.currentCropperFile.name
     });
+    if (this.cropperOptions.loadImageFailed instanceof Function) {
+      this.cropperOptions.loadImageFailed();
+    }
   }
 
   private handleFilesIfDroppingProcessIsFinished() {

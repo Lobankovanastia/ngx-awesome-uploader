@@ -2,7 +2,6 @@ import {ImageTransform} from 'ngx-image-cropper';
 
 export interface CropperOptions {
   aspectRatio?: number;
-  autoCrop?: boolean;
   maintainAspectRatio?: boolean;
   resizeToWidth?: number;
   resizeToHeight?: number;
@@ -20,12 +19,12 @@ export interface CropperOptions {
   disabled?: boolean;
   canvasRotation?: number;
   transform?: ImageTransform;
+  loadImageFailed?: Function;
 }
 
 
 export class CropperOptionsModel implements CropperOptions {
   readonly aspectRatio: number;
-  readonly autoCrop: boolean;
   readonly maintainAspectRatio: boolean;
   readonly resizeToWidth: number;
   readonly resizeToHeight: number;
@@ -43,10 +42,10 @@ export class CropperOptionsModel implements CropperOptions {
   readonly disabled: boolean;
   readonly canvasRotation: number;
   readonly transform: ImageTransform;
+  readonly loadImageFailed: Function;
 
   constructor({
       aspectRatio = 1,
-      autoCrop = true,
       maintainAspectRatio = true,
       resizeToWidth = 0,
       resizeToHeight = 0,
@@ -63,10 +62,10 @@ export class CropperOptionsModel implements CropperOptions {
       hideResizeSquares = false,
       disabled = false,
       canvasRotation = 0,
-      transform = {}
+      transform = {},
+      loadImageFailed = () => {}
   }: CropperOptions) {
       this.aspectRatio = aspectRatio;
-      this.autoCrop = autoCrop;
       this.maintainAspectRatio = maintainAspectRatio;
       this.resizeToWidth = resizeToWidth;
       this.resizeToHeight = resizeToHeight;
@@ -84,5 +83,6 @@ export class CropperOptionsModel implements CropperOptions {
       this.disabled = disabled;
       this.canvasRotation = canvasRotation;
       this.transform = transform;
+      this.loadImageFailed = loadImageFailed;
   }
 }
