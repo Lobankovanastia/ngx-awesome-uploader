@@ -1,5 +1,5 @@
 import { FilePickerService } from './file-picker.service';
-import { ElementRef, EventEmitter, OnDestroy, OnInit, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, EventEmitter, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { FilePreviewModel } from './file-preview.model';
 import { ValidationError } from './validation-error.model';
@@ -8,9 +8,11 @@ import { UploadEvent } from './file-drop';
 import { Observable, Subject } from 'rxjs';
 import { UploaderCaptions } from './uploader-captions';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ImageCroppedEvent } from 'ngx-image-cropper';
+import { CropperOptions } from './cropper-options.model';
 export declare class FilePickerComponent implements OnInit, OnDestroy {
     private fileService;
-    private elementRef;
+    private ref;
     /** Emitted when file upload via api successfully. Emitted for every file */
     uploadSuccess: EventEmitter<FilePreviewModel>;
     /** Emitted when file upload via api failed. Emitted for every file */
@@ -46,7 +48,7 @@ export declare class FilePickerComponent implements OnInit, OnDestroy {
     fileExtensions: String[];
     cropper: any;
     /** Cropper options. */
-    cropperOptions: Object;
+    cropperOptions: CropperOptions;
     /** Files array for cropper. Will be shown equentially if crop enabled */
     filesForCropper: File[];
     /** Current file to be shown in cropper*/
@@ -61,8 +63,10 @@ export declare class FilePickerComponent implements OnInit, OnDestroy {
     _captions: UploaderCaptions;
     cropClosed$: Subject<FilePreviewModel>;
     _onDestroy$: Subject<void>;
-    safeCropImgUrl: SafeResourceUrl;
-    constructor(fileService: FilePickerService, elementRef: ElementRef);
+    croppedImage: Blob;
+    cropperIsReady: boolean;
+    private droppingProcess;
+    constructor(fileService: FilePickerService, ref: ChangeDetectorRef);
     ngOnInit(): void;
     ngOnDestroy(): void;
     setCaptions(): void;
@@ -70,8 +74,6 @@ export declare class FilePickerComponent implements OnInit, OnDestroy {
     listenToCropClose(): void;
     /** Sets custom cropper options if avaiable */
     setCropperOptions(): void;
-    /** Sets manual cropper options if no custom options are avaiable */
-    setDefaultCropperOptions(): void;
     /** On input file selected */
     onChange(fileInput: HTMLInputElement): void;
     /** Handles input and drag/drop files */
@@ -93,15 +95,13 @@ export declare class FilePickerComponent implements OnInit, OnDestroy {
     /** Opens cropper for image crop */
     openCropper(file: File): void;
     getSafeUrl(file: File): SafeResourceUrl;
-    /** On img load event */
-    cropperImgLoaded(e: any): void;
     /** Close or cancel cropper */
     closeCropper(filePreview: FilePreviewModel): void;
     /** Removes files from files list */
     removeFileFromList(file: FilePreviewModel): void;
     /** Emits event when file upload api returns success  */
     onUploadSuccess(fileItem: FilePreviewModel): void;
-    /** Emits event when file upload api returns success  */
+    /** Emits event when file upload api returns failure  */
     onUploadFail(er: HttpErrorResponse): void;
     /** Validates file extension */
     isValidExtension(file: File, fileName: string): boolean;
@@ -115,4 +115,8 @@ export declare class FilePickerComponent implements OnInit, OnDestroy {
     removeFile(fileItem: FilePreviewModel): void;
     /** Emits event when file remove api returns success  */
     onRemoveSuccess(fileItem: FilePreviewModel): void;
+    imageCropped(event: ImageCroppedEvent): void;
+    imageLoaded(): void;
+    loadImageFailed(): void;
+    private handleFilesIfDroppingProcessIsFinished;
 }
